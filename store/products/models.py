@@ -1,6 +1,5 @@
-from django.db import models
-
 from app_users.models import CustomUser
+from django.db import models
 
 
 class ProductCategory(models.Model):
@@ -25,6 +24,7 @@ class Product(models.Model):
     class Meta:
         verbose_name = 'товар'
         verbose_name_plural = 'товары'
+        ordering = ('name',)
 
     def __str__(self):
         return self.name

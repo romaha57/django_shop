@@ -1,7 +1,7 @@
 from django.contrib import admin
+from products.admin import BasketAdmin
 
 from .models import CustomUser, VerifyEmailModel
-from products.admin import BasketAdmin
 
 
 class CustomUserAdmin(admin.ModelAdmin):

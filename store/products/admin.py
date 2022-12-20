@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ProductCategory, Product, Basket
+from .models import Basket, Product, ProductCategory
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -17,5 +17,3 @@ class BasketAdmin(admin.TabularInline):
 
 admin.site.register(ProductCategory)
 admin.site.register(Product, ProductAdmin)
-
-

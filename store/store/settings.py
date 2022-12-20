@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+DOMAIN_NAME = 'http://localhost:8000'
 
 # Application definition
 
@@ -64,6 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'products.context_processors.categories'
             ],
         },
     },
@@ -76,9 +78,13 @@ WSGI_APPLICATION = 'store.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "store_django_db",
+        "USER": "django_admin",
+        "PASSWORD": "djangostore",
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
     }
 }
 
@@ -136,4 +142,9 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Send email for verify account
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'django-project322@yandex.ru'
+EMAIL_HOST_PASSWORD = 'adminsitedjango322'
+EMAIL_USE_SSL = True

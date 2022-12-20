@@ -1,9 +1,9 @@
-from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
-from django.views.generic import TemplateView, ListView
-
-from .models import ProductCategory, Product, Basket
+from django.shortcuts import redirect
+from django.views.generic import ListView, TemplateView
 from utils.mixins import TitleMixin
+
+from .models import Basket, Product
 
 
 class IndexView(TitleMixin, TemplateView):
@@ -22,11 +22,6 @@ class ProductListView(TitleMixin, ListView):
         queryset = super().get_queryset()
         category_id = self.kwargs.get('category_id')
         return queryset if category_id is None else queryset.filter(category=category_id)
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['categories'] = ProductCategory.objects.all()
-        return context
 
 
 @login_required

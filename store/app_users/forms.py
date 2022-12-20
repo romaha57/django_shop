@@ -1,12 +1,13 @@
 import uuid
 from datetime import timedelta
 
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django import forms
+from django.contrib.auth.forms import (AuthenticationForm, UserChangeForm,
+                                       UserCreationForm)
+from django.core.exceptions import ValidationError
 from django.utils.timezone import now
 
-from .models import CustomUser
-from .models import VerifyEmailModel
+from .models import CustomUser, VerifyEmailModel
 
 
 class LoginForm(AuthenticationForm):
@@ -37,6 +38,13 @@ class RegistrationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        records = CustomUser.objects.filter(email=email)
+        if records:
+            raise ValidationError('поле email должно быть уникальным')
+        return email
 
     def save(self, commit=True):
         user = super().save(commit=True)
