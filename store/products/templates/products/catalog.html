@@ -13,8 +13,9 @@
 
         <div class="col-lg-3">
 
-            <h1 class="my-4">Store</h1>
+            <h1 class="my-4">Категории</h1>
             <div class="list-group">
+                 <a href="{% url 'products:catalog' %}" class="list-group-item">все товары</a>
                 {% for category in categories %}
                 <a href="{% url 'products:category' category.id %}" class="list-group-item">{{ category.name }}</a>
                 {% endfor %}
@@ -77,23 +78,23 @@
                      {% endfor %}
             </div>
 
-
+            {% if is_paginated %}
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">
                     <li class="page-item
-                    {% if not products.has_previous %} disabled {% endif %}">
-                        <a class="page-link" href="{% if products.has_previous %} {% url 'products:paginator' products.previous_page_number %} {% else %} # {% endif %}" tabindex="-1" aria-disabled="true">Предыдущая</a>
+                    {% if not page_obj.has_previous %} disabled {% endif %}">
+                        <a class="page-link" href="{% if page_obj.has_previous %} {% url 'products:paginator' page_obj.previous_page_number %} {% else %} # {% endif %}" tabindex="-1" aria-disabled="true">Предыдущая</a>
                     </li>
-                    {% for page in products.paginator.page_range %}
+                    {% for page in paginator.page_range %}
                     <li class="page-item"><a class="page-link" href="{% url 'products:paginator' page %}">{{ page }}</a></li>
                    {% endfor %}
                      <li class="page-item
-                    {% if not products.has_next %} disabled {% endif %}">
-                        <a class="page-link" href="{% if products.has_next %} {% url 'products:paginator' products.next_page_number %} {% else %} # {% endif %}" tabindex="-1" aria-disabled="true">Следующая</a>
+                    {% if not page_obj.has_next %} disabled {% endif %}">
+                        <a class="page-link" href="{% if page_obj.has_next %} {% url 'products:paginator' page_obj.next_page_number %} {% else %} # {% endif %}" tabindex="-1" aria-disabled="true">Следующая</a>
                     </li>
                 </ul>
             </nav>
-
+            {% endif %}
         </div>
 
     </div>

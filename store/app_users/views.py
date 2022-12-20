@@ -1,55 +1,40 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView
 
 from .forms import LoginForm, RegistrationForm, ProfileForm
 from products.models import Basket
+from app_users.models import CustomUser
+from utils.mixins import TitleMixin
 
 
-def loginn(request):
-    if request.method == 'POST':
-        form = LoginForm(data=request.POST)
-        if form.is_valid():
-            username = request.POST['username']
-            password = request.POST['password']
-            user = authenticate(username=username, password=password)
-            if user:
-                login(request, user)
-                return redirect(reverse('products:index'))
-    else:
-        form = LoginForm()
-    return render(request, 'app_users/login.html', {'form': form})
+class UserLoginView(TitleMixin, LoginView):
+    form_class = LoginForm
+    template_name = 'app_users/login.html'
+    title = 'Вход'
 
 
-def registration(request):
-    if request.method == 'POST':
-        form = RegistrationForm(data=request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Вы успешно зарегистрировались!')
-            return redirect(reverse('app_users:login'))
-    else:
-        form = RegistrationForm
-
-    return render(request, 'app_users/registration.html', {'form': form})
+class UserRegistrationView(TitleMixin, SuccessMessageMixin, CreateView):
+    model = CustomUser
+    form_class = RegistrationForm
+    template_name = 'app_users/registration.html'
+    success_url = reverse_lazy('app_users:login')
+    title = 'Регистрация'
+    success_message = 'Вы успешно зарегистрировались'
 
 
-@login_required
-def profile(request):
-    if request.method == 'POST':
-        form = ProfileForm(data=request.POST, instance=request.user, files=request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect(reverse('app_users:profile'))
+class UserProfileView(TitleMixin, LoginRequiredMixin, UpdateView):
+    model = CustomUser
+    form_class = ProfileForm
+    template_name = 'app_users/profile.html'
+    title = 'Личный кабинет'
 
-    else:
-        form = ProfileForm(instance=request.user)
+    def get_success_url(self):
+        return reverse_lazy('app_users:profile', args=(self.object.id,))
 
-    return render(request, 'app_users/profile.html', {'form': form, 'basket': Basket.objects.filter(user=request.user)})
-
-
-def logoutt(request):
-    logout(request)
-    return redirect(reverse('products:index'))
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['basket'] = Basket.objects.filter(user=self.object)
+        return context

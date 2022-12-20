@@ -1,20 +1,32 @@
-from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView, ListView
 
 from .models import ProductCategory, Product, Basket
+from utils.mixins import TitleMixin
 
 
-def index(request):
-    return render(request, 'products/index.html')
+class IndexView(TitleMixin, TemplateView):
+    template_name = 'products/index.html'
+    title = 'Онлайн-магазин'
 
 
-def show_catalog(request, category_id=None, page_number=1):
-    products = Product.objects.all() if category_id is None else Product.objects.filter(category=category_id)
-    paginator = Paginator(products, 3)
-    products = paginator.page(page_number)
-    categories = ProductCategory.objects.all()
-    return render(request, 'products/catalog.html', {'products': products, 'categories': categories})
+class ProductListView(TitleMixin, ListView):
+    model = Product
+    template_name = 'products/catalog.html'
+    context_object_name = 'products'
+    paginate_by = 3
+    title = 'Каталог товаров'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        category_id = self.kwargs.get('category_id')
+        return queryset if category_id is None else queryset.filter(category=category_id)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['categories'] = ProductCategory.objects.all()
+        return context
 
 
 @login_required
