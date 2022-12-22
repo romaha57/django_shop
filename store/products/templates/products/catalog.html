@@ -1,5 +1,6 @@
 {% extends  'products/base.html' %}
 {% load static %}
+{% load humanize %}
 
     <!-- Custom styles for this template -->
     {% block css %}<link href="{% static '/vendor/css/products.css' %}" rel="stylesheet">{% endblock %}
@@ -23,9 +24,7 @@
 
         </div>
         <!-- /.col-lg-3 -->
-
         <div class="col-lg-9">
-
             <div id="carouselExampleIndicators" class="carousel slide my-4" data-ride="carousel">
                 <ol class="carousel-indicators">
                     <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
@@ -66,7 +65,7 @@
                             <h4 class="card-title">
                                 <a href="#">{{ product.name }}</a>
                             </h4>
-                            <h5>{{ product.price }} руб.</h5>
+                            <h5>{{ product.price|intcomma }} руб.</h5>
                             <p class="card-text">{{ product.description }}</p>
                         </div>
                         <div class="card-footer text-center">

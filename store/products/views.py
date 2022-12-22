@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.views.generic import ListView, TemplateView
-from utils.mixins import TitleMixin
 
+from utils.mixins import TitleMixin
 from .models import Basket, Product
 
 
