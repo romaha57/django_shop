@@ -1,10 +1,10 @@
+from app_users.tasks import send_email_for_verify
 from django import forms
 from django.contrib.auth.forms import (AuthenticationForm, UserChangeForm,
                                        UserCreationForm)
 from django.core.exceptions import ValidationError
 
 from .models import CustomUser
-from app_users.tasks import send_email_for_verify
 
 
 class LoginForm(AuthenticationForm):

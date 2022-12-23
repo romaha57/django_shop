@@ -5,7 +5,6 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView
-
 from products.models import Basket
 from utils.mixins import TitleMixin
 

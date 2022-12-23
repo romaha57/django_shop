@@ -16,9 +16,9 @@
 
             <h1 class="my-4">Категории</h1>
             <div class="list-group">
-                 <a href="{% url 'products:catalog' %}" class="list-group-item">все товары</a>
+                 <a href="{% url 'products:catalog' %}" class="list-group-item list-group-item-dark">все товары</a>
                 {% for category in categories %}
-                <a href="{% url 'products:category' category.id %}" class="list-group-item">{{ category.name }}</a>
+                <a href="{% url 'products:category' category.id %}" class="list-group-item list-group-item-dark">{{ category.name }}</a>
                 {% endfor %}
             </div>
 

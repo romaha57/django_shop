@@ -4,7 +4,7 @@ from .models import Basket, Product, ProductCategory
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'quantity', 'category')
+    list_display = ('name', 'price', 'quantity', 'category', 'stripe_product_price_id')
     search_fields = ('name',)
     list_filter = ('category',)
 

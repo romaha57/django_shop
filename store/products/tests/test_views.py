@@ -1,10 +1,9 @@
 from http import HTTPStatus
 
-from django.test import TestCase
-from django.shortcuts import reverse
-
-from products.models import Product, ProductCategory, Basket
 from app_users.models import CustomUser
+from django.shortcuts import reverse
+from django.test import TestCase
+from products.models import Basket, Product, ProductCategory
 
 
 class IndexViewTestCase(TestCase):
@@ -30,7 +29,7 @@ class ProductListViewTestCase(TestCase):
             Product.objects.create(
                 name=f'{i} name',
                 description=f'{i} description',
-                quantity = i,
+                quantity=i,
                 price=i,
                 image='test_image',
                 category=ProductCategory.objects.first()
@@ -108,7 +107,7 @@ class BasketAddRemoveTestCase(TestCase):
         user = CustomUser.objects.first()
         product = Product.objects.first()
         url = reverse('products:add_in_basket', kwargs={'product_id': product.id})
-        response = self.client.get(url)
+        self.client.get(url)
         baskets = Basket.objects.filter(user=user, product=product)
         if not baskets.exists():
             Basket.objects.create(
@@ -129,12 +128,10 @@ class BasketAddRemoveTestCase(TestCase):
         )
 
         url = reverse('products:add_in_basket', kwargs={'product_id': product.id})
-        response = self.client.get(url)
+        self.client.get(url)
         baskets = Basket.objects.filter(user=user, product=product)
         if baskets.exists():
             basket.quantity += 1
             basket.save()
 
         self.assertEqual(basket.quantity, 2)
-
-

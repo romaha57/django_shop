@@ -1,11 +1,9 @@
 import uuid
 from http import HTTPStatus
 
-from django.test import TestCase
-from django.shortcuts import reverse
-from django.utils.timezone import now
-
 from app_users.models import CustomUser, VerifyEmailModel
+from django.shortcuts import reverse
+from django.test import TestCase
 
 
 class UserRegistrationViewTestCase(TestCase):
@@ -66,10 +64,6 @@ class UserLoginViewTestCase(TestCase):
         self.assertEqual(response.context_data['title'], 'Вход')
 
     def test_login_user_post_success(self):
-        data_for_login = {
-            'username': 'testsuser_name',
-            'password': 'Qweasdfgh123'
-        }
         user = CustomUser.objects.first()
         self.client.force_login(user=user)
         response = self.client.get(reverse('products:index'))
@@ -132,6 +126,3 @@ class EmailVerifyViewTestCase(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
         self.assertRedirects(response, reverse('products:index'))
-
-
-
