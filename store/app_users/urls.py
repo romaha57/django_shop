@@ -4,6 +4,7 @@ from django.urls import path
 from .views import (EmailVerifyView, UserLoginView, UserProfileView,
                     UserRegistrationView)
 
+# namespace for users app
 app_name = 'app_users'
 
 urlpatterns = [

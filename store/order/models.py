@@ -1,9 +1,12 @@
-from app_users.models import CustomUser
 from django.db import models
+
+from app_users.models import CustomUser
 from products.models import Basket
 
 
 class Order(models.Model):
+    """Модель заказа товаров"""
+
     CREATED_ORDER = 1
     PAID = 2
     ON_WAY = 3
@@ -32,6 +35,9 @@ class Order(models.Model):
         return f'user:{self.user.username}, №{self.id}'
 
     def update_after_payment(self):
+        """Изменение статуса, запись в историю корзины, удаление корзины пользователя из личного кабинета
+        после оплаты заказа"""
+
         baskets = Basket.objects.filter(user=self.user)
         self.status = self.PAID
         self.basket_history = {

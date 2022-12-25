@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import DetailView, ListView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView
+
 from products.models import Basket
 from utils.mixins import TitleMixin
 
@@ -20,16 +21,22 @@ endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
 
 
 class SuccessOrderView(TitleMixin, TemplateView):
+    """Отображение при успешной оплате заказа"""
+
     template_name = 'order/success.html'
     title = 'Заказ успешно оплачен'
 
 
 class CancelOrderView(TitleMixin, TemplateView):
+    """Отображение при ошибке при оплате заказа"""
+
     template_name = 'order/cancel.html'
     title = 'Ошибка при заказе'
 
 
 class OrdersListview(TitleMixin, ListView):
+    """Отображение списка заказов в истории заказов"""
+
     template_name = 'order/orders.html'
     context_object_name = 'orders'
     model = Order
@@ -38,15 +45,21 @@ class OrdersListview(TitleMixin, ListView):
 
 
 class OrderDetailView(DetailView):
+    """Отображение отдельного заказа"""
+
     template_name = 'order/order.html'
     context_object_name = 'order'
 
     def get_queryset(self):
+        """Фильтруем заказы для каждого отдельного пользователя"""
+
         queryset = Order.objects.filter(user=self.request.user)
 
         return queryset
 
     def get_context_data(self, **kwargs):
+        """Добавляем в title номер заказа"""
+
         context = super().get_context_data(**kwargs)
         context['title'] = f'Заказ № {self.object.id}'
 
@@ -54,12 +67,16 @@ class OrderDetailView(DetailView):
 
 
 class OrderCreateView(TitleMixin, CreateView):
+    """Отображение при создании заказа"""
+
     template_name = 'order/order-create.html'
     form_class = OrderCreateForm
     success_url = reverse_lazy('order:order_create')
     title = 'Оформление заказа'
 
     def post(self, request, *args, **kwargs):
+        """Переопределяем post для работы со stripe(оплата заказа)"""
+
         super().post(request, *args, **kwargs)
         baskets = Basket.objects.filter(user=request.user)
 
@@ -73,18 +90,23 @@ class OrderCreateView(TitleMixin, CreateView):
         return redirect(checkout_session.url, HTTPStatus.SEE_OTHER)
 
     def get_context_data(self, **kwargs):
+        """Формируем корзину товаров для каждго пользователя в отображении
+        при создании заказа"""
+
         context = super().get_context_data(**kwargs)
         context['baskets'] = Basket.objects.filter(user=self.request.user)
 
         return context
 
     def form_valid(self, form):
+        """Добавляем в форму OrderCreateForm в поле 'user' пользователя """
         form.instance.user = self.request.user
         return super().form_valid(form)
 
 
 @csrf_exempt
 def stripe_webhook_view(request):
+    """Обработчик событий stripe (оплата заказа)"""
     payload = request.body
     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     event = None
@@ -112,6 +134,8 @@ def stripe_webhook_view(request):
 
 
 def fulfill_order(session):
+    """После успешной оплаты получаем по id сам заказ и обновляем информацию о нем"""
+
     order_id = int(session.metadata.order_id)
     order = Order.objects.get(id=order_id)
     order.update_after_payment()

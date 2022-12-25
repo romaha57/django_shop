@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (CancelOrderView, OrderCreateView, OrderDetailView,
                     OrdersListview, SuccessOrderView)
 
+# namespace for order app
 app_name = 'order'
 
 urlpatterns = [

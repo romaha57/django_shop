@@ -4,6 +4,8 @@ from .models import Order
 
 
 class OrderCreateForm(forms.ModelForm):
+    """Форма для создания заказа"""
+
     first_name = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control', 'placeholder': 'введите имя'}))
     last_name = forms.CharField(widget=forms.TextInput(attrs={

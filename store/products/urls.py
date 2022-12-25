@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (IndexView, ProductListView, add_in_basket,
                     remove_from_basket)
 
+# namespace for products app
 app_name = 'products'
 
 urlpatterns = [

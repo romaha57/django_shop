@@ -7,11 +7,15 @@ from django.utils.timezone import now
 
 
 class CustomUser(AbstractUser):
+    """Модель юзера"""
+
     image = models.ImageField(upload_to='images_for_user', null=True, blank=True)
     email_is_verified = models.BooleanField(default=False, verbose_name='подтверждена почта?')
 
 
 class VerifyEmailModel(models.Model):
+    """Модель подтверждения почты"""
+
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='пользователь')
     unique_code = models.UUIDField(unique=True, verbose_name='уникальный код для создания ссылки подтверждения почты')
     experation_link = models.DateTimeField(verbose_name='срок жизни ссылки')
@@ -25,9 +29,13 @@ class VerifyEmailModel(models.Model):
         return f'{self.user.username}'
 
     def is_expired(self):
+        """Проверка на истечения срока жизни ссылки на подтверждения почты"""
+
         return True if now() <= self.experation_link else False
 
     def send_email_for_verification_user(self):
+        """Формирование ссылки и отправка письма для подтверждения почты"""
+
         link = reverse('app_users:verify_email', kwargs={'email': self.user.email, 'unique_code': self.unique_code})
         full_link = settings.DOMAIN_NAME + link
         subject = 'Письмо для подтверждения электронной почты'

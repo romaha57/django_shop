@@ -1,4 +1,6 @@
 class TitleMixin:
+    """Класс mixin для отображения заголовка сайта"""
+
     title = None
 
     def get_context_data(self, **kwargs):

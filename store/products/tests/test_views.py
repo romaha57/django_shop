@@ -1,14 +1,18 @@
 from http import HTTPStatus
 
-from app_users.models import CustomUser
 from django.shortcuts import reverse
 from django.test import TestCase
+
+from app_users.models import CustomUser
 from products.models import Basket, Product, ProductCategory
 
 
 class IndexViewTestCase(TestCase):
+    """Тест для главной страницы"""
 
     def test_index_view(self):
+        """Тестируем главную страницу"""
+
         url = reverse('products:index')
         response = self.client.get(url)
 
@@ -18,8 +22,11 @@ class IndexViewTestCase(TestCase):
 
 
 class ProductListViewTestCase(TestCase):
+    """Тест для страницы с каталогом"""
 
     def setUp(self):
+        """Создаем 2 категории и 3 товара"""
+
         for i in range(2):
             ProductCategory.objects.create(
                 name=f'{i} category'
@@ -36,6 +43,8 @@ class ProductListViewTestCase(TestCase):
             )
 
     def test_list_all_product(self):
+        """Тестируем отображение каталога со всеми категориями"""
+
         url = reverse('products:catalog')
         response = self.client.get(url)
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -43,9 +52,12 @@ class ProductListViewTestCase(TestCase):
         self.assertEqual(response.context_data['title'], 'Каталог товаров')
 
         products = Product.objects.all()
+        # делаем списками, чтобы можно было сравнивать
         self.assertEqual(list(response.context_data['object_list']), list(products))
 
     def test_list_products_with_category(self):
+        """Тестируем отображение каталога со определенной категорией"""
+
         category = ProductCategory.objects.first()
         url = reverse('products:category', kwargs={'category_id': category.id})
         response = self.client.get(url)
@@ -53,9 +65,13 @@ class ProductListViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'products/catalog.html')
         self.assertEqual(response.context_data['title'], 'Каталог товаров')
         products = Product.objects.filter(category=category.id)
+
+        # делаем списками, чтобы можно было сравнивать
         self.assertEqual(list(response.context_data['object_list']), list(products))
 
     def test_list_products_with_pagination(self):
+        """Тестируем пагинацию"""
+
         for i in range(2):
             Product.objects.create(
                 name=f'{i} name',
@@ -73,16 +89,24 @@ class ProductListViewTestCase(TestCase):
         self.assertEqual(response.context_data['title'], 'Каталог товаров')
 
         products = Product.objects.all()[:3]
+
+        # проверяем, что на 1 странице отобразилось 3 товара
         self.assertEqual(list(response.context_data['object_list']), list(products))
 
         url = reverse('products:paginator', kwargs={'page': 2})
         response = self.client.get(url)
         products = Product.objects.all()[3:]
+
+        # проверяем, что на 2 странице отобразилось оставшиеся 2 товара
         self.assertEqual(list(response.context_data['object_list']), list(products))
 
 
 class BasketAddRemoveTestCase(TestCase):
+    """Проверяем добавление и удаление из корзины"""
+
     def setUp(self):
+        """Создаем категорию товара, юзера и товар"""
+
         ProductCategory.objects.create(
             name='category'
         )
@@ -104,6 +128,8 @@ class BasketAddRemoveTestCase(TestCase):
         )
 
     def test_add_in_basket_when_basket_not_exists(self):
+        """Проверяем создание новой корзины товара"""
+
         user = CustomUser.objects.first()
         product = Product.objects.first()
         url = reverse('products:add_in_basket', kwargs={'product_id': product.id})
@@ -119,6 +145,8 @@ class BasketAddRemoveTestCase(TestCase):
         self.assertEqual(len(all_baskets), 1)
 
     def test_add_in_basket_when_basket_exists(self):
+        """Проверяем увелечение количество товара в корзине"""
+
         user = CustomUser.objects.first()
         product = Product.objects.first()
         basket = Basket.objects.create(

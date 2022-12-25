@@ -9,9 +9,11 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import environ
 from pathlib import Path
 
+import environ
+
+# load env
 env = environ.Env(
     DEBUG=(bool),
     SECRET_KEY=(str),
@@ -73,10 +75,13 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.yandex',
     'debug_toolbar',
     'django_extensions',
+    'rest_framework',
+    'rest_framework.authtoken',
 
     'app_users.apps.AppUsersConfig',
     'products.apps.ProductsConfig',
     'order.apps.OrderConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -126,7 +131,7 @@ DATABASES = {
     }
 }
 
-# cache
+# Cache
 
 REDIS_HOST = env('REDIS_HOST')
 REDIS_PORT = env('REDIS_PORT')
@@ -191,10 +196,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# main authenticate model
+# Main authenticate model
 AUTH_USER_MODEL = 'app_users.CustomUser'
 
-# redirect after login. logout
+# Redirect after login, logout
 LOGIN_URL = '/users/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -202,14 +207,12 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Send email for verify account
 
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-else:
-    EMAIL_HOST = env('EMAIL_HOST')
-    EMAIL_PORT = env('EMAIL_PORT')
-    EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-    EMAIL_USE_SSL = env('EMAIL_USE_SSL')
+
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_USE_SSL = env('EMAIL_USE_SSL')
 
 
 # Authenticate with social
@@ -241,18 +244,26 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-# django debug toolbar
+# Django debug toolbar
 INTERNAL_IPS = [
    '127.0.0.1',
     'localhost',
 ]
 
-
-# celery
+# Celery
 CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}'
 CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}'
 
-# stripe payment
+# Stripe payment
 STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
 STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
 STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
+
+# Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 3,
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
