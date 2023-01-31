@@ -34,6 +34,7 @@ services:
         environment:
             - POSTGRES_DB=store_django_db
             - POSTGRES_USER=django
+            - POSTGRES_PASSWORD=postgres
         volumes:
             - pgdata:/var/lib/postgresql/data/
     redis:
